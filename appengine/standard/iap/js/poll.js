@@ -1,4 +1,4 @@
-// Copyright Google Inc.
+// Copyright 2017 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,11 +21,11 @@ function getStatus() {
     if (response.ok) {
       return response.text();
     }
-    // [START handle_error]
+    // [START gae_handle_error]
     if (response.status === 401) {
       statusElm.innerHTML = 'Login stale. <input type="button" value="Refresh" onclick="sessionRefreshClicked();"/>';
     }
-    // [END handle_error]
+    // [END gae_handle_error]
     else {
       statusElm.innerHTML = response.statusText;
     }
@@ -41,7 +41,7 @@ function getStatus() {
 getStatus();
 setInterval(getStatus, 10000); // 10 seconds
 
-// [START refresh_session]
+// [START gae_refresh_session]
 var iapSessionRefreshWindow = null;
 
 function sessionRefreshClicked() {
@@ -54,16 +54,28 @@ function sessionRefreshClicked() {
 
 function checkSessionRefresh() {
   if (iapSessionRefreshWindow != null && !iapSessionRefreshWindow.closed) {
-    fetch('/favicon.ico').then(function(response) {
+    // Attempting to start a new session.
+    // XMLHttpRequests is used by the server to identify AJAX requests
+    fetch('/favicon.ico', {
+          method: "GET",
+          credentials: 'include',
+          headers: {
+              'X-Requested-With': 'XMLHttpRequest'
+          }
+    .then((response) => {
+      // Checking if browser has a session for the requested app
       if (response.status === 401) {
+        // No new session detected. Try to get a session again
         window.setTimeout(checkSessionRefresh, 500);
       } else {
+        // Session retrieved.
         iapSessionRefreshWindow.close();
         iapSessionRefreshWindow = null;
       }
+    })
     });
   } else {
     iapSessionRefreshWindow = null;
   }
 }
-// [END refresh_session]
+// [END gae_refresh_session]

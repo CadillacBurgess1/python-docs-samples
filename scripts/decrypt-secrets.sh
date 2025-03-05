@@ -42,3 +42,11 @@ gcloud secrets versions access latest \
        --secret="python-docs-samples-client-secrets" \
        --project="${PROJECT_ID}" \
        > testing/client-secrets.json
+gcloud secrets versions access latest \
+       --secret="cloudai-samples-secrets" \
+       --project="python-docs-samples-tests" \
+       > testing/cloudai-samples-secrets.sh
+gcloud secrets versions access latest \
+       --secret="python-docs-samples-cloud-sql-secrets" \
+       --project="cloud-sql-connector-testing" \
+       > testing/cloudsql-samples-secrets.sh
